@@ -7,6 +7,7 @@ import (
 	"github.com/gizak/termui/v3/widgets"
 	github2 "github.com/google/go-github/v64/github"
 	"github.com/samber/lo"
+	"github.com/skratchdot/open-golang/open"
 	"github.com/xiaoxuan6/gsv/pkg/github"
 	"github.com/xiaoxuan6/gsv/pkg/global"
 	"github.com/xiaoxuan6/gsv/services"
@@ -73,7 +74,7 @@ func RenderList(items []string, page, total int) {
 			}
 
 			item := re1[0][2]
-			if len(item) < 1 && len(re1[0][1]) < 1{
+			if len(item) < 1 && len(re1[0][1]) < 1 {
 				fmt.Println("github repos empty")
 				os.Exit(0)
 			}
@@ -229,7 +230,7 @@ func RenderRepos(repos string) {
 	for _, val := range accountStarRepos {
 		if strings.Compare(*val.Repository.FullName, repos) == 0 {
 			target = true
-			RenderTable(val.Repository)
+			RenderTable(val.Repository, val.DescriptionZh)
 		}
 	}
 
@@ -239,17 +240,16 @@ func RenderRepos(repos string) {
 	}
 }
 
-func RenderTable(repos *github2.Repository) {
+func RenderTable(repos *github2.Repository, description string) {
 	if err := ui.Init(); err != nil {
 		log.Fatalf("failed to initialize termui: %v", err)
 	}
 	defer ui.Close()
 
 	table := widgets.NewTable()
-	table.Title = repos.GetFullName()
 	table.Rows = [][]string{
 		{"repos", "desc", "language", "stars", "forks"},
-		{repos.GetFullName(), repos.GetDescription(), repos.GetLanguage(), strconv.Itoa(repos.GetStargazersCount()), strconv.Itoa(repos.GetForksCount())},
+		{repos.GetFullName(), description, repos.GetLanguage(), strconv.Itoa(repos.GetStargazersCount()), strconv.Itoa(repos.GetForksCount())},
 	}
 	table.ColumnWidths = []int{30, 80, 10, 10, 15}
 	table.TextStyle = ui.NewStyle(ui.ColorWhite)
@@ -271,6 +271,8 @@ func RenderTable(repos *github2.Repository) {
 			ui.Close()
 			RenderSearch()
 			os.Exit(0)
+		case "o":
+			_ = open.Run(fmt.Sprintf("https://github.com/%s", repos.GetFullName()))
 		case "r":
 			ui.Clear()
 			ui.Close()
@@ -288,5 +290,6 @@ func RenderTable(repos *github2.Repository) {
 			RenderList(items, 0, len(items))
 			os.Exit(0)
 		}
+		ui.Render(table, TableHelp())
 	}
 }

@@ -37,9 +37,9 @@ func FetchReposHelp() *widgets.Paragraph {
 
 func TableHelp() *widgets.Paragraph {
 	p := widgets.NewParagraph()
-	p.Text = "Ctrl+c：终止程序 、s：重新搜索、r：展示 github owner stars list"
+	p.Text = "Ctrl+c：终止程序 、s：重新搜索、r：展示 github owner stars list、o：使用浏览器打开链接"
 	p.Border = false
-	p.SetRect(0, 20, 75, 10)
+	p.SetRect(0, 20, 100, 10)
 	p.TextStyle.Fg = ui.ColorMagenta
 
 	return p

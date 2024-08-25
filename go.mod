@@ -10,7 +10,9 @@ require (
 	github.com/gofri/go-github-ratelimit v1.1.0
 	github.com/google/go-github/v64 v64.0.0
 	github.com/joho/godotenv v1.5.1
+	github.com/mitchellh/go-homedir v1.1.0
 	github.com/samber/lo v1.47.0
+	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 	github.com/urfave/cli/v2 v2.27.4
 )
 

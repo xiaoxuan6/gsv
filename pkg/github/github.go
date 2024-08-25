@@ -1,11 +1,17 @@
 package github
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"github.com/gofri/go-github-ratelimit/github_ratelimit"
 	"github.com/google/go-github/v64/github"
+	"github.com/mitchellh/go-homedir"
+	"io"
+	"io/ioutil"
+	"net/url"
 	"os"
+	"strings"
 )
 
 var (
@@ -13,6 +19,35 @@ var (
 
 	ctx = context.Background()
 )
+
+func fetchToken() string {
+	gitCredentials, err := homedir.Expand("~/.git-credentials")
+	if err != nil {
+		return ""
+	}
+
+	body, err := ioutil.ReadFile(gitCredentials)
+	if err != nil {
+		return ""
+	}
+
+	r := bufio.NewReader(strings.NewReader(string(body)))
+	for {
+		line, _, err1 := r.ReadLine()
+		if err1 == io.EOF {
+			break
+		}
+
+		if strings.HasSuffix(string(line), "@github.com") {
+			u, _ := url.Parse(string(line))
+			if password, ok := u.User.Password(); ok && strings.HasPrefix(password, "ghp_") {
+				return password
+			}
+		}
+	}
+
+	return ""
+}
 
 func newGithubClient() *github.Client {
 	if client != nil {
@@ -26,13 +61,17 @@ func newGithubClient() *github.Client {
 	}
 
 	token := os.Getenv("GITHUB_TOKEN")
-	if os.Getenv("GITHUB_TOKEN") == "" {
-		fmt.Printf(`
+	if token == "" {
+		token = fetchToken()
+		if token == "" {
+			fmt.Printf(`
 github token empty.
 Please set: export GITHUB_TOKEN="xxxx" or create .env file
 github token：https://github.com/settings/tokens
+
 `)
-		return nil
+			return nil
+		}
 	}
 
 	client = github.NewClient(rateLimiter).WithAuthToken(token)
