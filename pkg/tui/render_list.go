@@ -10,6 +10,7 @@ import (
 	"github.com/skratchdot/open-golang/open"
 	"github.com/xiaoxuan6/gsv/pkg/github"
 	"github.com/xiaoxuan6/gsv/pkg/global"
+	"github.com/xiaoxuan6/gsv/pkg/translate"
 	"github.com/xiaoxuan6/gsv/services"
 	"log"
 	"os"
@@ -271,6 +272,12 @@ func RenderTable(repos *github2.Repository, description string) {
 			ui.Clear()
 			ui.Close()
 			RenderSearch()
+			os.Exit(0)
+		case "t":
+			ui.Clear()
+			ui.Close()
+			desc := translate.Translation(description)
+			RenderTable(repos, desc)
 			os.Exit(0)
 		case "o":
 			_ = open.Run(fmt.Sprintf("https://github.com/%s", repos.GetFullName()))

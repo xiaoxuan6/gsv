@@ -9,7 +9,7 @@ func ListHelp() *widgets.Paragraph {
 	p := widgets.NewParagraph()
 	p.Text = "Ctrl+c：终止程序、j：上一条、K：下一条、b：置低、t：置顶、s：搜索 github owner、e|Enter：进入详情页"
 	p.Border = false
-	p.SetRect(0, 5, 100, 1)
+	p.SetRect(0, 5, 110, 1)
 	p.TextStyle.Fg = ui.ColorMagenta
 
 	return p
@@ -37,7 +37,7 @@ func FetchReposHelp() *widgets.Paragraph {
 
 func TableHelp() *widgets.Paragraph {
 	p := widgets.NewParagraph()
-	p.Text = "Ctrl+c：终止程序 、s：重新搜索、r：展示 github owner stars list、o：使用浏览器打开链接"
+	p.Text = "Ctrl+c：终止程序 、s：重新搜索、r：github owner stars list、o：使用浏览器打开链接、t：翻译 desc"
 	p.Border = false
 	p.SetRect(0, 20, 100, 10)
 	p.TextStyle.Fg = ui.ColorMagenta
