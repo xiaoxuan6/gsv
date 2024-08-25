@@ -29,8 +29,8 @@ func AllRepos() *cli.Command {
 				Usage:   "需要查询的页数",
 			},
 			&cli.IntFlag{
-				Name:    "perPage",
-				Aliases: []string{"pp"},
+				Name:    "pageCount",
+				Aliases: []string{"pc"},
 				Value:   100,
 				Usage:   "每页查询的个数",
 			},
@@ -42,7 +42,7 @@ func AllRepos() *cli.Command {
 			s.Start()
 
 			global.CurrentAccount = c.String("account")
-			allRepos, nextPage := services.FetchData(c.String("account"), c.Int("page"), c.Int("prePage"))
+			allRepos, nextPage := services.FetchData(c.String("account"), c.Int("page"), c.Int("pageCount"))
 			global.AccountsStarReposNextPage[global.CurrentAccount] = nextPage
 			s.Stop()
 
