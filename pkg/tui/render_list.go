@@ -73,7 +73,7 @@ func RenderList(items []string, page, total int) {
 			}
 
 			item := re1[0][2]
-			if len(item) < 1 {
+			if len(item) < 1 && len(re1[0][1]) < 1{
 				fmt.Println("github repos empty")
 				os.Exit(0)
 			}
