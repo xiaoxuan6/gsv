@@ -2,7 +2,6 @@ package tui
 
 import (
 	"fmt"
-	"github.com/briandowns/spinner"
 	ui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
 	github2 "github.com/google/go-github/v64/github"
@@ -10,6 +9,7 @@ import (
 	"github.com/skratchdot/open-golang/open"
 	"github.com/xiaoxuan6/gsv/pkg/github"
 	"github.com/xiaoxuan6/gsv/pkg/global"
+	"github.com/xiaoxuan6/gsv/pkg/spinner"
 	"github.com/xiaoxuan6/gsv/pkg/translate"
 	"github.com/xiaoxuan6/gsv/services"
 	"log"
@@ -17,7 +17,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 )
 
 var regex = `【(.*?)】（(.*?)）`
@@ -146,20 +145,19 @@ func fetchRepos(username string) {
 	if allStarRepos, ok := global.AccountsAllStarRepos[username]; ok {
 		items := services.CheckItem(allStarRepos)
 		nextPage := global.AccountsStarReposNextPage[username]
+		global.CurrentAccount = username
 		RenderList(items, nextPage, len(items))
 	} else {
-		s := spinner.New(spinner.CharSets[30], 100*time.Millisecond)
-		s.Prefix = "fetching github owners "
-		s.FinalMSG = "done"
-		s.Start()
+		owners := spinner.RunF[[]string]("fetching github owners ", func() []string {
+			users := github.SearchOwner(username)
+			owners := make([]string, 0)
+			for _, value := range users {
+				owners = append(owners, value.GetLogin())
+			}
 
-		users := github.SearchOwner(username)
-		owners := make([]string, 0)
-		for _, value := range users {
-			owners = append(owners, value.GetLogin())
-		}
+			return owners
+		})
 
-		s.Stop()
 		if len(owners) == 0 {
 			owners = append(owners, "暂无数据")
 		}
@@ -214,14 +212,9 @@ func fetchRepos(username string) {
 }
 
 func ReloadRenderList(page int) {
-	s := spinner.New(spinner.CharSets[30], 100*time.Millisecond)
-	s.Prefix = "fetching github stars repos data "
-	s.FinalMSG = "done"
-	s.Start()
-
-	allRepos, nextPage := services.FetchDataWithPage(global.CurrentAccount, page)
-
-	s.Stop()
+	allRepos, nextPage := spinner.RunF2[[]string, int]("fetching github stars repos data ", func() ([]string, int) {
+		return services.FetchDataWithPage(global.CurrentAccount, page)
+	})
 	RenderList(allRepos, nextPage, len(allRepos))
 }
 
@@ -276,7 +269,11 @@ func RenderTable(repos *github2.Repository, description string) {
 		case "t":
 			ui.Clear()
 			ui.Close()
-			desc := translate.Translation(description)
+
+			desc := spinner.RunF[string]("translate doing", func() string {
+				return translate.Translation(description)
+			})
+
 			RenderTable(repos, desc)
 			os.Exit(0)
 		case "o":
@@ -285,17 +282,12 @@ func RenderTable(repos *github2.Repository, description string) {
 			ui.Clear()
 			ui.Close()
 
-			s := spinner.New(spinner.CharSets[30], 100*time.Millisecond)
-			s.Prefix = "fetching github stars repos data "
-			s.FinalMSG = "done"
-			s.Start()
+			items := spinner.RunF[[]string]("fetching github stars repos data ", func() []string {
+				currentRepos := global.AccountsAllStarRepos[global.CurrentAccount]
+				return services.CheckItem(currentRepos)
+			})
 
-			currentRepos := global.AccountsAllStarRepos[global.CurrentAccount]
-			items := services.CheckItem(currentRepos)
-
-			s.Stop()
-
-			RenderList(items, 0, len(items))
+			RenderList(items, global.AccountsStarReposNextPage[global.CurrentAccount], len(items))
 			os.Exit(0)
 		}
 		ui.Render(table, TableHelp())
