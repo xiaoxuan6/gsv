@@ -16,3 +16,4 @@ go install github.com/xiaoxuan6/gsv@latest
 
 > [!WARNING]  
 > [termui](github.com/gizak/termui) Not support win `gitbash`
+> `cmder` 无法展示内容
