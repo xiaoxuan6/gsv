@@ -1,0 +1,59 @@
+env:
+  - GO111MODULE=on
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    goos:
+      - windows
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - '386'
+      - arm
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm
+      - goos: windows
+        goarch: '386'
+
+archives:
+  - format: tar.gz
+    name_template: >-
+      {{ .ProjectName }}_v{{ .Version }}_
+      {{- .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    format_overrides:
+      - goos: windows
+        format: binary
+    files:
+      - none*
+
+release:
+  footer: |
+    Full Changelog: [{{ .PreviousTag }}...{{ .Tag }}](https://{{ .ModulePath }}/compare/{{ .PreviousTag }}...{{ .Tag }})
+
+changelog:
+  sort: desc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^Merge'
+      - '^test'
+  groups:
+    - title: '🚀 Features'
+      regexp: 'feat:'
+    - title: '🐛 Bug Fixes'
+      regexp: 'fix:'
+    - title: '🔨 Others'
