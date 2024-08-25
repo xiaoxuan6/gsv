@@ -11,8 +11,9 @@ import (
 )
 
 var (
-	wg   sync.WaitGroup
-	lock sync.Mutex
+	wg                   sync.WaitGroup
+	lock                 sync.Mutex
+	accountsAllStarRepos sync.Map
 )
 
 func FetchDataWithPage(account string, page int) (items []string, nextPage int) {
@@ -41,25 +42,28 @@ func CheckRepos(repos []*github2.Repository) (items []string) {
 			defer wg.Done()
 
 			desc := checkItem(val)
-			NewRepository := &global.GRepository{
+			newRepository := &global.GRepository{
 				Repository:    val,
 				DescriptionZh: desc,
 			}
 
-			lock.Lock()
-			defer lock.Unlock()
-			var AllStarRepos []*global.GRepository
-			if value, ok := global.AccountsAllStarRepos[global.CurrentAccount]; ok {
-				AllStarRepos = append(value, NewRepository)
+			if v, ok := accountsAllStarRepos.Load(global.CurrentAccount); ok {
+				allStarRepos := v.([]*global.GRepository)
+				allStarRepos = append(allStarRepos, newRepository)
+				accountsAllStarRepos.Store(global.CurrentAccount, allStarRepos)
 			} else {
-				AllStarRepos = append(AllStarRepos, NewRepository)
+				accountsAllStarRepos.Store(global.CurrentAccount, []*global.GRepository{newRepository})
 			}
-			global.AccountsAllStarRepos[global.CurrentAccount] = AllStarRepos
 
 			items = append(items, desc)
 		}()
 	}
 	wg.Wait()
+
+	if v, ok := accountsAllStarRepos.Load(global.CurrentAccount); ok {
+		allStarRepos := v.([]*global.GRepository)
+		global.AccountsAllStarRepos[global.CurrentAccount] = allStarRepos
+	}
 
 	return
 }
