@@ -21,12 +21,18 @@ func newGithubClient() *github.Client {
 
 	rateLimiter, err := github_ratelimit.NewRateLimitWaiterClient(nil)
 	if err != nil {
-		panic(err)
+		fmt.Printf("github ratelimt error：%s", err.Error())
+		return nil
 	}
 
 	token := os.Getenv("GITHUB_TOKEN")
 	if os.Getenv("GITHUB_TOKEN") == "" {
-		panic("github token empty")
+		fmt.Printf(`
+github token empty.
+Please set: export GITHUB_TOKEN="xxxx" or create .env file
+github token：https://github.com/settings/tokens
+`)
+		return nil
 	}
 
 	client = github.NewClient(rateLimiter).WithAuthToken(token)
