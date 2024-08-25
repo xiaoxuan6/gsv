@@ -46,6 +46,8 @@ func CheckRepos(repos []*github2.Repository) (items []string) {
 				DescriptionZh: desc,
 			}
 
+			lock.Lock()
+			defer lock.Unlock()
 			var AllStarRepos []*global.GRepository
 			if value, ok := global.AccountsAllStarRepos[global.CurrentAccount]; ok {
 				AllStarRepos = append(value, NewRepository)
