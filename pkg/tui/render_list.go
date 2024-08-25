@@ -276,6 +276,22 @@ func RenderTable(repos *github2.Repository, description string) {
 
 			RenderTable(repos, desc)
 			os.Exit(0)
+		case "d":
+			ui.Clear()
+			ui.Close()
+
+			allStarsRepos := global.AccountsAllStarRepos[global.CurrentAccount]
+			allStarsRepos = lo.FilterMap(allStarsRepos, func(item *global.GRepository, _ int) (*global.GRepository, bool) {
+				if strings.Compare(*item.Repository.FullName, repos.GetFullName()) == 0 {
+					return item, false
+				}
+				return item, true
+			})
+			global.AccountsAllStarRepos[global.CurrentAccount] = allStarsRepos
+
+			items := services.CheckItem(allStarsRepos)
+			RenderList(items, global.AccountsStarReposNextPage[global.CurrentAccount], len(items))
+			os.Exit(0)
 		case "o":
 			_ = open.Run(fmt.Sprintf("https://github.com/%s", repos.GetFullName()))
 		case "r":
