@@ -11,4 +11,6 @@ var (
 	CurrentAccount string
 
 	AccountsAllStarRepos = make(map[string][]*GRepository, 0)
+
+	AccountsStarReposNextPage = make(map[string]int, 0)
 )

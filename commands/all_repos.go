@@ -43,7 +43,7 @@ func AllRepos() *cli.Command {
 
 			global.CurrentAccount = c.String("account")
 			allRepos, nextPage := services.FetchData(c.String("account"), c.Int("page"), c.Int("prePage"))
-
+			global.AccountsStarReposNextPage[global.CurrentAccount] = nextPage
 			s.Stop()
 
 			tui.RenderList(allRepos, nextPage, len(allRepos))

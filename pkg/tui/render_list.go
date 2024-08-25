@@ -144,7 +144,8 @@ func RenderSearch() {
 func fetchRepos(username string) {
 	if allStarRepos, ok := global.AccountsAllStarRepos[username]; ok {
 		items := services.CheckItem(allStarRepos)
-		RenderList(items, 0, len(items))
+		nextPage := global.AccountsStarReposNextPage[username]
+		RenderList(items, nextPage, len(items))
 	} else {
 		s := spinner.New(spinner.CharSets[30], 100*time.Millisecond)
 		s.Prefix = "fetching github owners "
