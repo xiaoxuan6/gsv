@@ -2,14 +2,14 @@ package tui
 
 import (
 	"fmt"
-	"github-stars/pkg/github"
-	"github-stars/pkg/global"
-	"github-stars/services"
 	"github.com/briandowns/spinner"
 	ui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
 	github2 "github.com/google/go-github/v64/github"
 	"github.com/samber/lo"
+	"github.com/xiaoxuan6/gsv/pkg/github"
+	"github.com/xiaoxuan6/gsv/pkg/global"
+	"github.com/xiaoxuan6/gsv/services"
 	"log"
 	"os"
 	"regexp"

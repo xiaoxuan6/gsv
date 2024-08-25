@@ -1,11 +1,11 @@
 package commands
 
 import (
-	"github-stars/pkg/global"
-	"github-stars/pkg/tui"
-	"github-stars/services"
 	"github.com/briandowns/spinner"
 	"github.com/urfave/cli/v2"
+	"github.com/xiaoxuan6/gsv/pkg/global"
+	"github.com/xiaoxuan6/gsv/pkg/tui"
+	"github.com/xiaoxuan6/gsv/services"
 	"time"
 )
 

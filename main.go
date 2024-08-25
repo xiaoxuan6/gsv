@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github-stars/commands"
 	"github.com/joho/godotenv"
 	"github.com/urfave/cli/v2"
+	"github.com/xiaoxuan6/gsv/commands"
 	"os"
 )
 

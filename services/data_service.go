@@ -2,10 +2,10 @@ package services
 
 import (
 	"fmt"
-	"github-stars/pkg/github"
-	"github-stars/pkg/global"
-	"github-stars/pkg/translate"
 	github2 "github.com/google/go-github/v64/github"
+	"github.com/xiaoxuan6/gsv/pkg/github"
+	"github.com/xiaoxuan6/gsv/pkg/global"
+	"github.com/xiaoxuan6/gsv/pkg/translate"
 	"strings"
 	"sync"
 )
