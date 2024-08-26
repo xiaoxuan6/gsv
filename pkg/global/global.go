@@ -8,6 +8,7 @@ type GRepository struct {
 }
 
 var (
+	SelectedRow    int
 	CurrentAccount string
 
 	AccountsAllStarRepos = make(map[string][]*GRepository, 0)

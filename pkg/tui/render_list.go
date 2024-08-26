@@ -42,6 +42,7 @@ func RenderList(items []string, page, total int) {
 	l := widgets.NewList()
 	l.Title = "All stars repos"
 	l.Rows = items
+	l.SelectedRow = global.SelectedRow
 	l.SelectedRowStyle = ui.NewStyle(ui.ColorGreen)
 	l.TextStyle = ui.NewStyle(ui.ColorWhite)
 	l.SetRect(0, 5, 200, 30)
@@ -54,6 +55,7 @@ func RenderList(items []string, page, total int) {
 		case "a":
 			ui.Clear()
 			ui.Close()
+			global.SelectedRow = l.SelectedRow
 			RenderAccounts()
 			os.Exit(0)
 		case "<C-c>":
@@ -102,8 +104,10 @@ func RenderList(items []string, page, total int) {
 
 			i, _ := strconv.Atoi(item)
 			if i != 0 {
+				global.SelectedRow = 0
 				ReloadRenderList(i)
 			} else {
+				global.SelectedRow = l.SelectedRow
 				RenderRepos(re1[0][1])
 			}
 			os.Exit(0)
@@ -226,6 +230,7 @@ func fetchRepos(username string) {
 					RenderSearch()
 				} else {
 					global.CurrentAccount = owner
+					global.SelectedRow = 0
 					ReloadRenderList(1)
 				}
 				os.Exit(0)
@@ -376,6 +381,7 @@ func RenderAccounts() {
 			ui.Clear()
 			ui.Close()
 
+			global.SelectedRow = 0
 			username := l.Rows[l.SelectedRow]
 			fetchRepos(strings.TrimSpace(username))
 			os.Exit(0)
