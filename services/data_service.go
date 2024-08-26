@@ -29,7 +29,13 @@ func FetchData(account string, page, perPage int) (items []string, nextPage int)
 		allRepos = append(allRepos, repos)
 	}
 
-	items = CheckRepos(allRepos)
+	if len(allRepos) > 0 {
+		items = CheckRepos(allRepos)
+	} else {
+		allStarsRepos := make([]*global.GRepository, 0)
+		global.AccountsAllStarRepos[global.CurrentAccount] = allStarsRepos
+	}
+	global.AccountsStarReposNextPage[global.CurrentAccount] = nextPage
 
 	return
 }

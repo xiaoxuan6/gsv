@@ -21,6 +21,13 @@ import (
 
 var regex = `【(.*?)】（(.*?)）`
 
+func RenderCurrentList() {
+	currentStarRepos := global.AccountsAllStarRepos[global.CurrentAccount]
+	items := services.CheckItem(currentStarRepos)
+	nextPage := global.AccountsStarReposNextPage[global.CurrentAccount]
+	RenderList(items, nextPage, len(items))
+}
+
 func RenderList(items []string, page, total int) {
 	items = append(items, fmt.Sprintf("【footer】（%s） - %s", strconv.Itoa(page), strconv.Itoa(total)))
 	items = lo.Map(items, func(item string, index int) string {
@@ -44,6 +51,11 @@ func RenderList(items []string, page, total int) {
 	for {
 		e := <-uiEvents
 		switch e.ID {
+		case "a":
+			ui.Clear()
+			ui.Close()
+			RenderAccounts()
+			os.Exit(0)
 		case "<C-c>":
 			ui.Clear()
 			ui.Close()
@@ -62,7 +74,7 @@ func RenderList(items []string, page, total int) {
 			ui.Close()
 			RenderSearch()
 			os.Exit(0)
-		case "e", "<Enter>":
+		case "<Enter>":
 			ui.Clear()
 			ui.Close()
 
@@ -116,7 +128,12 @@ func RenderSearch() {
 			ui.Close()
 			os.Exit(0)
 			return
-		case "<C-e>", "<Enter>":
+		case "c":
+			ui.Clear()
+			ui.Close()
+			RenderCurrentList()
+			os.Exit(0)
+		case "<Enter>":
 			ui.Clear()
 			ui.Close()
 
@@ -142,11 +159,9 @@ func RenderSearch() {
 }
 
 func fetchRepos(username string) {
-	if allStarRepos, ok := global.AccountsAllStarRepos[username]; ok {
-		items := services.CheckItem(allStarRepos)
-		nextPage := global.AccountsStarReposNextPage[username]
+	if _, ok := global.AccountsAllStarRepos[username]; ok {
 		global.CurrentAccount = username
-		RenderList(items, nextPage, len(items))
+		RenderCurrentList()
 	} else {
 		owners := spinner.RunF[[]string]("fetching github owners ", func() []string {
 			users := github.SearchOwner(username)
@@ -256,6 +271,11 @@ func RenderTable(repos *github2.Repository, description string) {
 	for {
 		e := <-uiEvents
 		switch e.ID {
+		case "a":
+			ui.Clear()
+			ui.Close()
+			RenderAccounts()
+			os.Exit(0)
 		case "<C-c>":
 			ui.Clear()
 			ui.Close()
@@ -298,14 +318,59 @@ func RenderTable(repos *github2.Repository, description string) {
 			ui.Clear()
 			ui.Close()
 
-			items := spinner.RunF[[]string]("fetching github stars repos data ", func() []string {
-				currentRepos := global.AccountsAllStarRepos[global.CurrentAccount]
-				return services.CheckItem(currentRepos)
-			})
-
-			RenderList(items, global.AccountsStarReposNextPage[global.CurrentAccount], len(items))
+			RenderCurrentList()
 			os.Exit(0)
 		}
 		ui.Render(table, TableHelp())
+	}
+}
+
+func RenderAccounts() {
+	accounts := lo.Keys(global.AccountsStarReposNextPage)
+
+	if err := ui.Init(); err != nil {
+		log.Fatalf("failed to initialize termui: %v", err)
+	}
+	defer ui.Close()
+
+	l := widgets.NewList()
+	l.Title = "All account"
+	l.Rows = accounts
+	l.SelectedRowStyle = ui.NewStyle(ui.ColorGreen)
+	l.TextStyle = ui.NewStyle(ui.ColorWhite)
+	l.SetRect(0, 5, 30, 30)
+	ui.Render(CurrentAccount(), l)
+
+	uiEvents := ui.PollEvents()
+	for {
+		e := <-uiEvents
+		switch e.ID {
+		case "<C-c>":
+			ui.Clear()
+			ui.Close()
+			os.Exit(0)
+		case "c":
+			ui.Clear()
+			ui.Close()
+			RenderCurrentList()
+			os.Exit(0)
+		case "j", "<Down>":
+			l.ScrollDown()
+		case "k", "<Up>":
+			l.ScrollUp()
+		case "s":
+			ui.Clear()
+			ui.Close()
+			RenderSearch()
+			os.Exit(0)
+		case "<Enter>":
+			ui.Clear()
+			ui.Close()
+
+			username := l.Rows[l.SelectedRow]
+			fetchRepos(strings.TrimSpace(username))
+			os.Exit(0)
+		}
+		ui.Render(l)
 	}
 }
