@@ -74,6 +74,15 @@ func RenderList(items []string, page, total int) {
 			ui.Close()
 			RenderSearch()
 			os.Exit(0)
+		case "o":
+			str := l.Rows[l.SelectedRow]
+			reg := regexp.MustCompile(`【(.*?)】（`).FindStringSubmatch(str)
+			if len(reg) < 2 {
+				fmt.Printf("系统错误！")
+				os.Exit(0)
+			}
+
+			_ = open.Run(fmt.Sprintf("https://github.com/%s", reg[1]))
 		case "<Enter>":
 			ui.Clear()
 			ui.Close()
@@ -99,7 +108,7 @@ func RenderList(items []string, page, total int) {
 			}
 			os.Exit(0)
 		}
-		ui.Render(l)
+		ui.Render(ListHelp(), l)
 	}
 }
 
@@ -208,7 +217,7 @@ func fetchRepos(username string) {
 				ui.Close()
 				RenderSearch()
 				os.Exit(0)
-			case "e", "<Enter>":
+			case "<Enter>":
 				ui.Clear()
 				ui.Close()
 
