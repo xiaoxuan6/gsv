@@ -8,6 +8,8 @@ type GRepository struct {
 }
 
 var (
+	PageCount      int
+	NextCount      int
 	SelectedRow    int
 	CurrentAccount string
 

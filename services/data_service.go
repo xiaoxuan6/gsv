@@ -17,7 +17,7 @@ var (
 )
 
 func FetchDataWithPage(account string, page int) (items []string, nextPage int) {
-	return FetchData(account, page, 100)
+	return FetchData(account, page, global.PageCount)
 }
 
 func FetchData(account string, page, perPage int) (items []string, nextPage int) {
