@@ -25,7 +25,6 @@ func RenderCurrentList() {
 	currentStarRepos := global.AccountsAllStarRepos[global.CurrentAccount]
 	items := services.CheckItem(currentStarRepos)
 	nextPage := global.AccountsStarReposNextPage[global.CurrentAccount]
-	global.NextCount = nextPage
 	RenderList(items, nextPage, len(items))
 }
 
@@ -332,8 +331,6 @@ func RenderTable(repos *github2.Repository, description string) {
 		case "r":
 			ui.Clear()
 			ui.Close()
-
-			global.SelectedRow = global.SelectedRow + (global.NextCount-1)*global.PageCount
 			RenderCurrentList()
 			os.Exit(0)
 		}
