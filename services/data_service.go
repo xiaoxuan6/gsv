@@ -11,9 +11,8 @@ import (
 )
 
 var (
-	wg                   sync.WaitGroup
-	lock                 sync.Mutex
-	accountsAllStarRepos sync.Map
+	wg   sync.WaitGroup
+	lock sync.Mutex
 )
 
 func FetchDataWithPage(account string, page int) (items []string, nextPage int) {
@@ -41,6 +40,7 @@ func FetchData(account string, page, perPage int) (items []string, nextPage int)
 }
 
 func CheckRepos(repos []*github2.Repository) (items []string) {
+	var accountsAllStarRepos sync.Map
 	for _, val := range repos {
 		val := val
 		wg.Add(1)

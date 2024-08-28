@@ -259,7 +259,7 @@ func RenderRepos(repos string) {
 	}
 
 	if target == false {
-		fmt.Printf("暂无 [%s] 数据！", repos)
+		fmt.Printf("暂无 [%s] 数据！\n当前用户：%s, 总数据：%d", repos, global.CurrentAccount, len(accountStarRepos))
 		return
 	}
 }
