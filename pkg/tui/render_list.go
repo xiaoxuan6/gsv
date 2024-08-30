@@ -254,7 +254,7 @@ func RenderRepos(repos string) {
 	for _, val := range accountStarRepos {
 		if strings.Compare(*val.Repository.FullName, repos) == 0 {
 			target = true
-			RenderTable(val.Repository, val.DescriptionZh)
+			RenderTable(val.Repository, val.DescriptionTranslate)
 		}
 	}
 

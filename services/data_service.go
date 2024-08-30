@@ -47,10 +47,11 @@ func CheckRepos(repos []*github2.Repository) (items []string) {
 		go func() {
 			defer wg.Done()
 
-			desc := checkItem(val)
+			desc, descT := checkItem(val)
 			newRepository := &global.GRepository{
-				Repository:    val,
-				DescriptionZh: desc,
+				Repository:           val,
+				DescriptionZh:        desc,
+				DescriptionTranslate: descT,
 			}
 
 			if v, ok := accountsAllStarRepos.Load(global.CurrentAccount); ok {
@@ -74,7 +75,7 @@ func CheckRepos(repos []*github2.Repository) (items []string) {
 	return
 }
 
-func checkItem(repos *github2.Repository) string {
+func checkItem(repos *github2.Repository) (string, string) {
 	var fullname, language, description string
 	if repos != nil {
 		if repos.FullName != nil {
@@ -90,7 +91,7 @@ func checkItem(repos *github2.Repository) string {
 
 	description = strings.ReplaceAll(strings.ReplaceAll(description, " | ", ""), "|", "")
 
-	return fmt.Sprintf("【%s】（%s） - %s", fullname, description, language)
+	return fmt.Sprintf("【%s】（%s） - %s", fullname, description, language), description
 }
 
 func CheckItem(repos []*global.GRepository) (items []string) {
