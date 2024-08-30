@@ -40,8 +40,21 @@ func TableHelp() *widgets.Paragraph {
 	p := widgets.NewParagraph()
 	p.Text = "Ctrl+c：终止程序、a：显示所有的用户、d:删除当前数据、o：使用浏览器打开链接、r：github stars 列表、s：重新搜索、t：翻译 desc"
 	p.Border = false
-	p.SetRect(0, 20, 140, 10)
+	p.SetRect(0, 30, 140, 15)
 	p.TextStyle.Fg = ui.ColorMagenta
+
+	return p
+}
+
+func TableDesc(desc string) *widgets.Paragraph {
+	p := widgets.NewParagraph()
+	p.Title = " description "
+	p.Border = true
+	p.Text = desc
+	p.PaddingTop = 1
+	p.SetRect(0, 10, 165, 15)
+	p.TextStyle.Fg = ui.ColorWhite
+	p.BorderStyle.Fg = ui.ColorWhite
 
 	return p
 }

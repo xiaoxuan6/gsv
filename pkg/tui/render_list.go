@@ -272,14 +272,14 @@ func RenderTable(repos *github2.Repository, description string) {
 
 	table := widgets.NewTable()
 	table.Rows = [][]string{
-		{"id", "repos", "desc", "language", "stars", "forks"},
-		{strconv.Itoa(global.SelectedRow + 1), repos.GetFullName(), description, repos.GetLanguage(), strconv.Itoa(repos.GetStargazersCount()), strconv.Itoa(repos.GetForksCount())},
+		{"id", "repos", "language", "stars", "forks"},
+		{strconv.Itoa(global.SelectedRow + 1), repos.GetFullName(), repos.GetLanguage(), strconv.Itoa(repos.GetStargazersCount()), strconv.Itoa(repos.GetForksCount())},
 	}
-	table.ColumnWidths = []int{5, 30, 80, 10, 10, 15}
+	table.ColumnWidths = []int{10, 30, 10, 10, 20}
 	table.TextStyle = ui.NewStyle(ui.ColorWhite)
 	table.TextAlignment = ui.AlignCenter
-	table.SetRect(0, 0, 150, 10)
-	ui.Render(table, TableHelp())
+	table.SetRect(0, 0, 80, 10)
+	ui.Render(table, TableDesc(description), TableHelp())
 
 	uiEvents := ui.PollEvents()
 	for {
@@ -353,7 +353,7 @@ func RenderTable(repos *github2.Repository, description string) {
 			RenderCurrentList()
 			os.Exit(0)
 		}
-		ui.Render(table, TableHelp())
+		ui.Render(table, TableDesc(description), TableHelp())
 	}
 }
 
@@ -399,8 +399,10 @@ func RenderAccounts() {
 			ui.Clear()
 			ui.Close()
 
-			global.SelectedRow = 0
 			username := l.Rows[l.SelectedRow]
+			if strings.Compare(username, global.CurrentAccount) != 0 {
+				global.SelectedRow = 0
+			}
 			fetchRepos(strings.TrimSpace(username))
 			os.Exit(0)
 		}
