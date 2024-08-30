@@ -3,8 +3,6 @@ module github.com/xiaoxuan6/gsv
 go 1.22.5
 
 require (
-	github.com/OwO-Network/gdeeplx v0.0.1
-	github.com/abadojack/whatlanggo v1.0.1
 	github.com/briandowns/spinner v1.23.1
 	github.com/gizak/termui/v3 v3.1.0
 	github.com/gofri/go-github-ratelimit v1.1.0
@@ -14,10 +12,12 @@ require (
 	github.com/samber/lo v1.47.0
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 	github.com/urfave/cli/v2 v2.27.4
+	github.com/xiaoxuan6/deeplx v0.0.4
 )
 
 require (
-	github.com/andybalholm/brotli v1.1.0 // indirect
+	github.com/abadojack/whatlanggo v1.0.1 // indirect
+	github.com/avast/retry-go v2.7.0+incompatible // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
 	github.com/fatih/color v1.17.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect

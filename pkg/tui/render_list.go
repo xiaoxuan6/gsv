@@ -272,13 +272,13 @@ func RenderTable(repos *github2.Repository, description string) {
 
 	table := widgets.NewTable()
 	table.Rows = [][]string{
-		{"repos", "desc", "language", "stars", "forks"},
-		{repos.GetFullName(), description, repos.GetLanguage(), strconv.Itoa(repos.GetStargazersCount()), strconv.Itoa(repos.GetForksCount())},
+		{"id", "repos", "desc", "language", "stars", "forks"},
+		{strconv.Itoa(global.SelectedRow + 1), repos.GetFullName(), description, repos.GetLanguage(), strconv.Itoa(repos.GetStargazersCount()), strconv.Itoa(repos.GetForksCount())},
 	}
-	table.ColumnWidths = []int{30, 80, 10, 10, 15}
+	table.ColumnWidths = []int{5, 30, 80, 10, 10, 15}
 	table.TextStyle = ui.NewStyle(ui.ColorWhite)
 	table.TextAlignment = ui.AlignCenter
-	table.SetRect(0, 0, 145, 10)
+	table.SetRect(0, 0, 150, 10)
 	ui.Render(table, TableHelp())
 
 	uiEvents := ui.PollEvents()
@@ -305,8 +305,27 @@ func RenderTable(repos *github2.Repository, description string) {
 			ui.Close()
 
 			desc := spinner.RunF[string]("translate doing", func() string {
-				return translate.Translation(description)
+				description = translate.Translation(description)
+				description = strings.ReplaceAll(strings.ReplaceAll(description, " | ", ""), "|", "")
+				return description
 			})
+
+			go func() {
+				allStarRepos := global.AccountsAllStarRepos[global.CurrentAccount]
+				allStarRepos = lo.FilterMap(allStarRepos, func(item *global.GRepository, _ int) (*global.GRepository, bool) {
+					if strings.Compare(item.Repository.GetFullName(), repos.GetFullName()) == 0 {
+						return &global.GRepository{
+							Repository:           item.Repository,
+							DescriptionZh:        fmt.Sprintf("【%s】（%s） - %s", repos.GetFullName(), desc, repos.GetLanguage()),
+							DescriptionTranslate: desc,
+						}, true
+					}
+
+					return item, true
+				})
+
+				global.AccountsAllStarRepos[global.CurrentAccount] = allStarRepos
+			}()
 
 			RenderTable(repos, desc)
 			os.Exit(0)

@@ -2,30 +2,22 @@ package translate
 
 import (
 	"fmt"
-	"github.com/OwO-Network/gdeeplx"
-	"github.com/abadojack/whatlanggo"
+	"github.com/xiaoxuan6/deeplx"
 	"strings"
 	"time"
 )
 
 func Translation(description string) string {
 	start := time.Now()
-	info := whatlanggo.Detect(description)
-	sourceLang := info.Lang.String()
-	if sourceLang != "Mandarin" {
-		response, err := gdeeplx.Translate(description, sourceLang, "zh", 0)
-		if err != nil {
-			//fmt.Println("translate err: ", err.Error())
-			return description
-		} else {
-			end := time.Now().Sub(start).Seconds()
-			description = fmt.Sprintf(
-				"%s {耗时：%s/s}",
-				strings.TrimSpace(response.(map[string]interface{})["data"].(string)),
-				fmt.Sprintf("%.2f", end),
-			)
-		}
+	response := deeplx.Translate(description, "en", "zh")
+	if response.Code != 200 {
+		return description
 	}
+	end := time.Now().Sub(start).Seconds()
 
-	return description
+	return fmt.Sprintf(
+		"%s {耗时：%s/s}",
+		strings.TrimSpace(response.Data),
+		fmt.Sprintf("%.2f", end),
+	)
 }
