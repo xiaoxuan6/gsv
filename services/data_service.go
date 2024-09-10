@@ -25,6 +25,10 @@ func FetchData(account string, page, perPage int) (items []string, nextPage int)
 	var allRepos []*github2.Repository
 	for _, starRepos := range allStarRepos {
 		repos := starRepos.Repository
+		if repos.GetDescription() == "" || repos.GetLanguage() == "" {
+			continue
+		}
+
 		allRepos = append(allRepos, repos)
 	}
 
