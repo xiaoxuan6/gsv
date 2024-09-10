@@ -17,6 +17,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var regex = `【(.*?)】（(.*?)）`
@@ -76,6 +77,11 @@ func RenderList(items []string, page, total int) {
 			ui.Close()
 			RenderSearch()
 			os.Exit(0)
+		case "l":
+			ui.Clear()
+			ui.Close()
+			RenderLanguagesList()
+			os.Exit(0)
 		case "o":
 			str := l.Rows[l.SelectedRow]
 			reg := regexp.MustCompile(`【(.*?)】（`).FindStringSubmatch(str)
@@ -113,6 +119,62 @@ func RenderList(items []string, page, total int) {
 			os.Exit(0)
 		}
 		ui.Render(ListHelp(), l)
+	}
+}
+
+func RenderLanguagesList() {
+ITEM:
+	items := global.AccountsAllLanguages[global.CurrentAccount]
+	if len(items) < 1 {
+		spinner.RunF0("sleep", func() {
+			time.Sleep(3)
+		})
+
+		goto ITEM
+	}
+
+	l := widgets.NewList()
+	l.Title = "All language list"
+	l.Rows = items
+	l.SelectedRowStyle = ui.NewStyle(ui.ColorGreen)
+	l.TextStyle = ui.NewStyle(ui.ColorWhite)
+	l.SetRect(0, 5, 30, 30)
+	ui.Render(LanguageListHelp(), l)
+
+	uiEvents := ui.PollEvents()
+	for {
+		e := <-uiEvents
+		switch e.ID {
+		case "<C-c>":
+			ui.Clear()
+			ui.Close()
+			os.Exit(0)
+		case "c":
+			ui.Clear()
+			ui.Close()
+			RenderCurrentList()
+			os.Exit(0)
+		case "j":
+			l.ScrollDown()
+		case "k":
+			l.ScrollUp()
+		case "b":
+			l.ScrollBottom()
+		case "t":
+			l.ScrollTop()
+		case "<Enter>":
+			ui.Clear()
+			ui.Close()
+
+			language := l.Rows[l.SelectedRow]
+			if languageStarRepos, ok := global.AccountsLanguageStarRepose[global.CurrentAccount][language]; ok {
+				languageItems := services.CheckItem(languageStarRepos)
+				nextPage := global.AccountsStarReposNextPage[global.CurrentAccount]
+				RenderList(languageItems, nextPage, len(languageItems))
+			}
+			os.Exit(0)
+		}
+		ui.Render(LanguageListHelp(), l)
 	}
 }
 

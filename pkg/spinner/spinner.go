@@ -7,6 +7,18 @@ import (
 
 type any = interface{}
 
+func RunF0(prefix string, f func()) {
+	s := spinner.New(spinner.CharSets[30], 100*time.Millisecond)
+	s.Prefix = prefix
+	s.FinalMSG = "done"
+	s.Start()
+
+	f()
+
+	s.Stop()
+	return
+}
+
 func RunF[T any](prefix string, f func() T) T {
 	s := spinner.New(spinner.CharSets[30], 100*time.Millisecond)
 	s.Prefix = prefix

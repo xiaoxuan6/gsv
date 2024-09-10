@@ -8,9 +8,19 @@ import (
 
 func ListHelp() *widgets.Paragraph {
 	p := widgets.NewParagraph()
-	p.Text = "Ctrl+c：终止程序、Enter：进入详情页、a：显示所有用户、b：置低、j：上一条、K：下一条、o: 打开链接、s：搜索 github 用户、t：置顶"
+	p.Text = "Ctrl+c：终止程序、Enter：进入详情页、a：显示所有用户、b：置低、j：上一条、K：下一条、l: 显示所有语言、o: 打开链接、s：搜索 github 用户、t：置顶"
 	p.Border = false
 	p.SetRect(0, 5, 140, 1)
+	p.TextStyle.Fg = ui.ColorMagenta
+
+	return p
+}
+
+func LanguageListHelp() *widgets.Paragraph {
+	p := widgets.NewParagraph()
+	p.Text = "Ctrl+c：终止程序、Enter：进入详情页、b：置低、c: 返回列表、j：上一条、K：下一条、t：置顶"
+	p.Border = false
+	p.SetRect(0, 0, 140, 1)
 	p.TextStyle.Fg = ui.ColorMagenta
 
 	return p

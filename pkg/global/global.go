@@ -16,4 +16,7 @@ var (
 	AccountsAllStarRepos = make(map[string][]*GRepository, 0)
 
 	AccountsStarReposNextPage = make(map[string]int, 0)
+
+	AccountsAllLanguages       = make(map[string][]string, 0)
+	AccountsLanguageStarRepose = make(map[string]map[string][]*GRepository, 0)
 )

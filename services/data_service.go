@@ -72,6 +72,8 @@ func CheckRepos(repos []*github2.Repository) (items []string) {
 		global.AccountsAllStarRepos[global.CurrentAccount] = allStarRepos
 	}
 
+	go Category(global.AccountsAllStarRepos[global.CurrentAccount])
+
 	return
 }
 
