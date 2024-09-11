@@ -40,8 +40,15 @@ func RenderList(items []string, page, total int) {
 	}
 	defer ui.Close()
 
+	title := "All stars repos"
+	if len(currentLanguage) > 1 {
+		title = fmt.Sprintf("Language【%s】stars repos", currentLanguage)
+		currentLanguage = ""
+		global.SelectedRow = 0
+	}
+
 	l := widgets.NewList()
-	l.Title = "All stars repos"
+	l.Title = title
 	l.Rows = items
 	l.SelectedRow = global.SelectedRow
 	l.SelectedRowStyle = ui.NewStyle(ui.ColorGreen)
@@ -64,6 +71,11 @@ func RenderList(items []string, page, total int) {
 			ui.Close()
 			os.Exit(0)
 			return
+		case "c":
+			ui.Clear()
+			ui.Close()
+			RenderCurrentList()
+			os.Exit(0)
 		case "j", "<Down>":
 			l.ScrollDown()
 		case "k", "<Up>":
@@ -75,11 +87,13 @@ func RenderList(items []string, page, total int) {
 		case "s":
 			ui.Clear()
 			ui.Close()
+			global.SelectedRow = l.SelectedRow
 			RenderSearch()
 			os.Exit(0)
 		case "l":
 			ui.Clear()
 			ui.Close()
+			global.SelectedRow = l.SelectedRow
 			RenderLanguagesList()
 			os.Exit(0)
 		case "o":
@@ -122,6 +136,8 @@ func RenderList(items []string, page, total int) {
 	}
 }
 
+var currentLanguage string
+
 func RenderLanguagesList() {
 ITEM:
 	items := global.AccountsAllLanguages[global.CurrentAccount]
@@ -133,12 +149,17 @@ ITEM:
 		goto ITEM
 	}
 
+	if err := ui.Init(); err != nil {
+		log.Fatalf("failed to initialize termui: %v", err)
+	}
+	defer ui.Close()
+
 	l := widgets.NewList()
 	l.Title = "All language list"
 	l.Rows = items
 	l.SelectedRowStyle = ui.NewStyle(ui.ColorGreen)
 	l.TextStyle = ui.NewStyle(ui.ColorWhite)
-	l.SetRect(0, 5, 30, 30)
+	l.SetRect(0, 5, 30, 20)
 	ui.Render(LanguageListHelp(), l)
 
 	uiEvents := ui.PollEvents()
@@ -148,6 +169,11 @@ ITEM:
 		case "<C-c>":
 			ui.Clear()
 			ui.Close()
+			os.Exit(0)
+		case "a":
+			ui.Clear()
+			ui.Close()
+			RenderAccounts()
 			os.Exit(0)
 		case "c":
 			ui.Clear()
@@ -168,6 +194,8 @@ ITEM:
 
 			language := l.Rows[l.SelectedRow]
 			if languageStarRepos, ok := global.AccountsLanguageStarRepose[global.CurrentAccount][language]; ok {
+				currentLanguage = language
+
 				languageItems := services.CheckItem(languageStarRepos)
 				nextPage := global.AccountsStarReposNextPage[global.CurrentAccount]
 				RenderList(languageItems, nextPage, len(languageItems))

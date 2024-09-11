@@ -3,6 +3,7 @@ package services
 import (
 	"github.com/xiaoxuan6/gsv/pkg/global"
 	"slices"
+	"sync"
 )
 
 func Category(repos []*global.GRepository) {
@@ -15,7 +16,7 @@ func Category(repos []*global.GRepository) {
 	}
 	global.AccountsAllLanguages[global.CurrentAccount] = languages
 
-	languagesStarRepos := make(map[string][]*global.GRepository, 0)
+	var languagesMap sync.Map
 	for _, repo := range repos {
 		repo := repo
 		wg.Add(1)
@@ -23,15 +24,21 @@ func Category(repos []*global.GRepository) {
 			defer wg.Done()
 
 			language := repo.Repository.GetLanguage()
-			if gRepository, ok := languagesStarRepos[language]; ok {
+			if v, ok := languagesMap.Load(language); ok {
+				gRepository := v.([]*global.GRepository)
 				gRepository = append(gRepository, repo)
-				languagesStarRepos[language] = gRepository
+				languagesMap.Store(language, gRepository)
 			} else {
-				languagesStarRepos[language] = []*global.GRepository{repo}
+				languagesMap.Store(language, []*global.GRepository{repo})
 			}
 		}()
 	}
-
 	wg.Wait()
+
+	languagesStarRepos := make(map[string][]*global.GRepository, 0)
+	for _, language := range languages {
+		value, _ := languagesMap.Load(language)
+		languagesStarRepos[language] = value.([]*global.GRepository)
+	}
 	global.AccountsLanguageStarRepose[global.CurrentAccount] = languagesStarRepos
 }
