@@ -6,6 +6,7 @@ type GRepository struct {
 	Repository           *github2.Repository
 	DescriptionZh        string `json:"description_zh"`
 	DescriptionTranslate string `json:"description_translate"`
+	TranslateStat        bool   `json:"translate_stat"`
 }
 
 var (

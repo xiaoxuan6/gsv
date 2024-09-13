@@ -4,7 +4,6 @@ import (
 	"fmt"
 	ui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
-	github2 "github.com/google/go-github/v64/github"
 	"github.com/samber/lo"
 	"github.com/skratchdot/open-golang/open"
 	"github.com/xiaoxuan6/gsv/pkg/github"
@@ -344,7 +343,7 @@ func RenderRepos(repos string) {
 	for _, val := range accountStarRepos {
 		if strings.Compare(*val.Repository.FullName, repos) == 0 {
 			target = true
-			RenderTable(val.Repository, val.DescriptionTranslate)
+			RenderTable(val, val.DescriptionTranslate)
 		}
 	}
 
@@ -354,7 +353,8 @@ func RenderRepos(repos string) {
 	}
 }
 
-func RenderTable(repos *github2.Repository, description string) {
+func RenderTable(gRepos *global.GRepository, description string) {
+	repos := gRepos.Repository
 	if err := ui.Init(); err != nil {
 		log.Fatalf("failed to initialize termui: %v", err)
 	}
@@ -394,30 +394,39 @@ func RenderTable(repos *github2.Repository, description string) {
 			ui.Clear()
 			ui.Close()
 
-			desc := spinner.RunF[string]("translate doing", func() string {
-				description = translate.Translation(description)
-				description = strings.ReplaceAll(strings.ReplaceAll(description, " | ", ""), "|", "")
-				return description
-			})
-
-			go func() {
-				allStarRepos := global.AccountsAllStarRepos[global.CurrentAccount]
-				allStarRepos = lo.FilterMap(allStarRepos, func(item *global.GRepository, _ int) (*global.GRepository, bool) {
-					if strings.Compare(item.Repository.GetFullName(), repos.GetFullName()) == 0 {
-						return &global.GRepository{
-							Repository:           item.Repository,
-							DescriptionZh:        fmt.Sprintf("【%s】（%s） - %s", repos.GetFullName(), desc, repos.GetLanguage()),
-							DescriptionTranslate: desc,
-						}, true
-					}
-
-					return item, true
+			var (
+				desc string
+				stat bool
+			)
+			if gRepos.TranslateStat != true {
+				desc, stat = spinner.RunF2[string, bool]("translate doing", func() (string, bool) {
+					result, ok := translate.Translation(description)
+					result = strings.ReplaceAll(strings.ReplaceAll(result, " | ", ""), "|", "")
+					return result, ok
 				})
 
-				global.AccountsAllStarRepos[global.CurrentAccount] = allStarRepos
-			}()
+				go func() {
+					allStarRepos := global.AccountsAllStarRepos[global.CurrentAccount]
+					allStarRepos = lo.FilterMap(allStarRepos, func(item *global.GRepository, _ int) (*global.GRepository, bool) {
+						if strings.Compare(item.Repository.GetFullName(), repos.GetFullName()) == 0 {
+							return &global.GRepository{
+								Repository:           item.Repository,
+								DescriptionZh:        fmt.Sprintf("【%s】（%s） - %s", repos.GetFullName(), desc, repos.GetLanguage()),
+								DescriptionTranslate: desc,
+								TranslateStat:        stat,
+							}, true
+						}
 
-			RenderTable(repos, desc)
+						return item, true
+					})
+
+					global.AccountsAllStarRepos[global.CurrentAccount] = allStarRepos
+				}()
+			} else {
+				desc = gRepos.DescriptionTranslate
+			}
+
+			RenderTable(gRepos, desc)
 			os.Exit(0)
 		case "d":
 			ui.Clear()
