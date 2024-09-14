@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"facette.io/natsort"
 	"fmt"
 	ui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
@@ -178,6 +179,7 @@ ITEM:
 
 		goto ITEM
 	}
+	natsort.Sort(items)
 
 	if err := ui.Init(); err != nil {
 		log.Fatalf("failed to initialize termui: %v", err)

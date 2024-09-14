@@ -3,6 +3,7 @@ module github.com/xiaoxuan6/gsv
 go 1.22.5
 
 require (
+	facette.io/natsort v0.0.0-20181210072756-2cd4dd1e2dcb
 	github.com/briandowns/spinner v1.23.1
 	github.com/gizak/termui/v3 v3.1.0
 	github.com/gofri/go-github-ratelimit v1.1.0
