@@ -16,6 +16,10 @@ func Category(repos []*global.GRepository) {
 	}
 	global.AccountsAllLanguages[global.CurrentAccount] = languages
 
+	LanguageCategory(repos, languages)
+}
+
+func LanguageCategory(repos []*global.GRepository, languages []string) {
 	var languagesMap sync.Map
 	for _, repo := range repos {
 		repo := repo

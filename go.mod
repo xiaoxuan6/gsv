@@ -12,7 +12,7 @@ require (
 	github.com/samber/lo v1.47.0
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 	github.com/urfave/cli/v2 v2.27.4
-	github.com/xiaoxuan6/deeplx v0.0.6
+	github.com/xiaoxuan6/deeplx v0.0.5
 )
 
 require (

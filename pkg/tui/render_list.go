@@ -16,6 +16,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -68,6 +69,36 @@ func RenderList(items []string, page, total int) {
 		case "<C-c>":
 			ui.Clear()
 			ui.Close()
+			os.Exit(0)
+			return
+		case "<C-t>":
+			ui.Clear()
+			ui.Close()
+
+			var wg sync.WaitGroup
+			newStarRepos := make([]*global.GRepository, 0)
+			allStarRepos := global.AccountsAllStarRepos[global.CurrentAccount]
+			for _, repo := range allStarRepos {
+				if repo.TranslateStat == false {
+					wg.Add(1)
+					repo := repo
+					go func() {
+						defer wg.Done()
+						desc, stat := translate.Translation(repo.Repository.GetDescription())
+						repo.TranslateStat = stat
+						repo.DescriptionTranslate = desc
+						repo.DescriptionZh = fmt.Sprintf("【%s】（%s） - %s", repo.Repository.GetFullName(), desc, repo.Repository.GetLanguage())
+						newStarRepos = append(newStarRepos, repo)
+					}()
+				} else {
+					newStarRepos = append(newStarRepos, repo)
+				}
+			}
+			wg.Wait()
+
+			global.AccountsAllStarRepos[global.CurrentAccount] = newStarRepos
+			go services.LanguageCategory(newStarRepos, global.AccountsAllLanguages[global.CurrentAccount])
+			RenderCurrentList()
 			os.Exit(0)
 			return
 		case "c":
