@@ -436,7 +436,10 @@ func RenderTable(gRepos *global.GRepository, description string) {
 					return result, ok
 				})
 
+				var wg sync.WaitGroup
+				wg.Add(1)
 				go func() {
+					defer wg.Done()
 					allStarRepos := global.AccountsAllStarRepos[global.CurrentAccount]
 					allStarRepos = lo.FilterMap(allStarRepos, func(item *global.GRepository, _ int) (*global.GRepository, bool) {
 						if strings.Compare(item.Repository.GetFullName(), repos.GetFullName()) == 0 {
@@ -453,6 +456,7 @@ func RenderTable(gRepos *global.GRepository, description string) {
 
 					global.AccountsAllStarRepos[global.CurrentAccount] = allStarRepos
 				}()
+				wg.Wait()
 			} else {
 				desc = gRepos.DescriptionTranslate
 			}
