@@ -43,7 +43,7 @@ func RenderList(items []string, page, total int) {
 
 	title := "All stars repos"
 	if len(currentLanguage) > 1 {
-		title = fmt.Sprintf("Language【%s】stars repos", currentLanguage)
+		title = fmt.Sprintf("Language【%s/%s】stars repos", currentLanguage, strconv.Itoa(len(items) -1))
 		currentLanguage = ""
 		global.SelectedRow = 0
 	}
