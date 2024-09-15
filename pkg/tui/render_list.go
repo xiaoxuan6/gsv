@@ -31,6 +31,7 @@ func RenderCurrentList() {
 }
 
 func RenderList(items []string, page, total int) {
+	global.PreAction = "RenderList"
 	items = append(items, fmt.Sprintf("【footer】（%s） - %s", strconv.Itoa(page), strconv.Itoa(total)))
 	items = lo.Map(items, func(item string, index int) string {
 		return fmt.Sprintf("%d、%s", index+1, item)
@@ -43,7 +44,7 @@ func RenderList(items []string, page, total int) {
 
 	title := "All stars repos"
 	if len(currentLanguage) > 1 {
-		title = fmt.Sprintf("Language【%s/%s】stars repos", currentLanguage, strconv.Itoa(len(items) -1))
+		title = fmt.Sprintf("Language【%s/%s】stars repos", currentLanguage, strconv.Itoa(len(items)-1))
 		currentLanguage = ""
 		global.SelectedRow = 0
 	}
@@ -210,7 +211,18 @@ ITEM:
 		case "c":
 			ui.Clear()
 			ui.Close()
-			RenderCurrentList()
+			if strings.HasPrefix(global.PreAction, "RenderLanguagesList") {
+				language := strings.Split(global.PreAction, ":")[1]
+				currentLanguage = language
+
+				languageStarRepos := global.AccountsLanguageStarRepose[global.CurrentAccount][language]
+				languageItems := services.CheckItem(languageStarRepos)
+				nextPage := global.AccountsStarReposNextPage[global.CurrentAccount]
+				RenderList(languageItems, nextPage, len(languageItems))
+			} else if global.PreAction == "RenderList" {
+				global.SelectedRow = 0
+				RenderCurrentList()
+			}
 			os.Exit(0)
 		case "j":
 			l.ScrollDown()
@@ -225,6 +237,7 @@ ITEM:
 			ui.Close()
 
 			language := l.Rows[l.SelectedRow]
+			global.PreAction = "RenderLanguagesList:" + language
 			if languageStarRepos, ok := global.AccountsLanguageStarRepose[global.CurrentAccount][language]; ok {
 				currentLanguage = language
 
@@ -263,7 +276,7 @@ func RenderSearch() {
 			ui.Close()
 			os.Exit(0)
 			return
-		case "c":
+		case "<Tab>":
 			ui.Clear()
 			ui.Close()
 			RenderCurrentList()

@@ -28,7 +28,7 @@ func LanguageListHelp() *widgets.Paragraph {
 
 func SearchHelp() *widgets.Paragraph {
 	p := widgets.NewParagraph()
-	p.Text = "Ctrl+c：终止程序、Ctrl+r：重新搜索、Enter：进入下一步、c: 取消搜索"
+	p.Text = "Ctrl+c：终止程序、Ctrl+r：重新搜索、Enter：进入下一步、tab: 取消搜索"
 	p.Border = false
 	p.SetRect(0, 5, 75, 10)
 	p.TextStyle.Fg = ui.ColorMagenta
