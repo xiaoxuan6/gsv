@@ -13,7 +13,6 @@ var (
 	PageCount      int
 	SelectedRow    int
 	CurrentAccount string
-	PreAction      string
 
 	AccountsAllStarRepos = make(map[string][]*GRepository, 0)
 

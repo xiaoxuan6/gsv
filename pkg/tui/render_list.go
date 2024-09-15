@@ -31,7 +31,6 @@ func RenderCurrentList() {
 }
 
 func RenderList(items []string, page, total int) {
-	global.PreAction = "RenderList"
 	items = append(items, fmt.Sprintf("【footer】（%s） - %s", strconv.Itoa(page), strconv.Itoa(total)))
 	items = lo.Map(items, func(item string, index int) string {
 		return fmt.Sprintf("%d、%s", index+1, item)
@@ -77,7 +76,8 @@ func RenderList(items []string, page, total int) {
 			ui.Clear()
 			ui.Close()
 
-			newStarRepos := spinner.RunF[[]*global.GRepository]("translate", func() []*global.GRepository {
+			global.SelectedRow = l.SelectedRow
+			newStarRepos := spinner.RunF[[]*global.GRepository]("translate...... ", func() []*global.GRepository {
 				var wg sync.WaitGroup
 				newStarRepos := make([]*global.GRepository, 0)
 				allStarRepos := global.AccountsAllStarRepos[global.CurrentAccount]
@@ -215,18 +215,7 @@ ITEM:
 		case "c":
 			ui.Clear()
 			ui.Close()
-			if strings.HasPrefix(global.PreAction, "RenderLanguagesList") {
-				language := strings.Split(global.PreAction, ":")[1]
-				currentLanguage = language
-
-				languageStarRepos := global.AccountsLanguageStarRepose[global.CurrentAccount][language]
-				languageItems := services.CheckItem(languageStarRepos)
-				nextPage := global.AccountsStarReposNextPage[global.CurrentAccount]
-				RenderList(languageItems, nextPage, len(languageItems))
-			} else if global.PreAction == "RenderList" {
-				global.SelectedRow = 0
-				RenderCurrentList()
-			}
+			RenderCurrentList()
 			os.Exit(0)
 		case "j":
 			l.ScrollDown()
@@ -241,7 +230,6 @@ ITEM:
 			ui.Close()
 
 			language := l.Rows[l.SelectedRow]
-			global.PreAction = "RenderLanguagesList:" + language
 			if languageStarRepos, ok := global.AccountsLanguageStarRepose[global.CurrentAccount][language]; ok {
 				currentLanguage = language
 
@@ -454,6 +442,7 @@ func RenderTable(gRepos *global.GRepository, description string) {
 					result = strings.ReplaceAll(strings.ReplaceAll(result, " | ", ""), "|", "")
 					return result, ok
 				})
+				gRepos.TranslateStat = stat
 
 				var wg sync.WaitGroup
 				wg.Add(1)
