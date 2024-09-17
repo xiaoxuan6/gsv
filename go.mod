@@ -2,8 +2,6 @@ module github.com/xiaoxuan6/gsv
 
 go 1.22.5
 
-replace github.com/xiaoxuan6/deeplx v0.0.6 => ./deeplx
-
 require (
 	facette.io/natsort v0.0.0-20181210072756-2cd4dd1e2dcb
 	github.com/briandowns/spinner v1.23.1
@@ -15,14 +13,13 @@ require (
 	github.com/samber/lo v1.47.0
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 	github.com/urfave/cli/v2 v2.27.4
-	github.com/xiaoxuan6/deeplx v0.0.6
+	github.com/xiaoxuan6/deeplx v0.1.1
 )
 
 require (
 	github.com/abadojack/whatlanggo v1.0.1 // indirect
 	github.com/avast/retry-go v2.7.0+incompatible // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
-	github.com/davecgh/go-spew v1.1.0 // indirect
 	github.com/fatih/color v1.17.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
@@ -30,7 +27,6 @@ require (
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/nsf/termbox-go v1.1.1 // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/tidwall/gjson v1.17.3 // indirect

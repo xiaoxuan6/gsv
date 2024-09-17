@@ -86,14 +86,14 @@ func checkItem(repos *github2.Repository) (string, string, bool) {
 	var fullname, language, description string
 	var ok bool
 	if repos != nil {
-		if repos.FullName != nil {
-			fullname = repos.GetFullName()
+		if fullName := repos.GetFullName(); fullName != "" {
+			fullname = fullName
 		}
-		if repos.Language != nil {
-			language = repos.GetLanguage()
+		if gLanguage := repos.GetLanguage(); gLanguage != "" {
+			language = gLanguage
 		}
-		if repos.Description != nil {
-			description, ok = translate.Translation(repos.GetDescription())
+		if gDescription := repos.GetDescription(); gDescription != "" {
+			description, ok = translate.Translation(gDescription)
 		}
 	}
 
