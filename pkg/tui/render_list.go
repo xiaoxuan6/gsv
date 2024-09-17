@@ -24,6 +24,8 @@ import (
 var regex = `【(.*?)】（(.*?)）`
 
 func RenderCurrentList() {
+	global.PreAction = ""
+
 	currentStarRepos := global.AccountsAllStarRepos[global.CurrentAccount]
 	items := services.CheckItem(currentStarRepos)
 	nextPage := global.AccountsStarReposNextPage[global.CurrentAccount]
@@ -31,10 +33,11 @@ func RenderCurrentList() {
 }
 
 func RenderList(items []string, page, total int) {
-	items = append(items, fmt.Sprintf("【footer】（%s） - %s", strconv.Itoa(page), strconv.Itoa(total)))
+	natsort.Sort(items)
 	items = lo.Map(items, func(item string, index int) string {
 		return fmt.Sprintf("%d、%s", index+1, item)
 	})
+	items = append(items, fmt.Sprintf("【footer】（%s） - %s", strconv.Itoa(page), strconv.Itoa(total)))
 
 	if err := ui.Init(); err != nil {
 		log.Fatalf("failed to initialize termui: %v", err)
@@ -42,9 +45,9 @@ func RenderList(items []string, page, total int) {
 	defer ui.Close()
 
 	title := "All stars repos"
-	if len(currentLanguage) > 1 {
+	if len(global.PreAction) > 1 {
+		currentLanguage := strings.Split(global.PreAction, ":")[1]
 		title = fmt.Sprintf("Language【%s/%s】stars repos", currentLanguage, strconv.Itoa(len(items)-1))
-		currentLanguage = ""
 		global.SelectedRow = 0
 	}
 
@@ -104,7 +107,7 @@ func RenderList(items []string, page, total int) {
 
 			global.AccountsAllStarRepos[global.CurrentAccount] = newStarRepos
 			go services.LanguageCategory(newStarRepos, global.AccountsAllLanguages[global.CurrentAccount])
-			RenderCurrentList()
+			cancel()
 			os.Exit(0)
 			return
 		case "c":
@@ -161,6 +164,7 @@ func RenderList(items []string, page, total int) {
 			i, _ := strconv.Atoi(item)
 			if i != 0 {
 				global.SelectedRow = 0
+				global.PreAction = ""
 				ReloadRenderList(i)
 			} else {
 				global.SelectedRow = l.SelectedRow
@@ -171,8 +175,6 @@ func RenderList(items []string, page, total int) {
 		ui.Render(ListHelp(), l)
 	}
 }
-
-var currentLanguage string
 
 func RenderLanguagesList() {
 ITEM:
@@ -215,11 +217,11 @@ ITEM:
 		case "c":
 			ui.Clear()
 			ui.Close()
-			RenderCurrentList()
+			cancel()
 			os.Exit(0)
-		case "j":
+		case "j", "<Down>":
 			l.ScrollDown()
-		case "k":
+		case "k", "<Up>":
 			l.ScrollUp()
 		case "b":
 			l.ScrollBottom()
@@ -230,9 +232,8 @@ ITEM:
 			ui.Close()
 
 			language := l.Rows[l.SelectedRow]
+			global.PreAction = "RenderLanguagesList:" + language
 			if languageStarRepos, ok := global.AccountsLanguageStarRepose[global.CurrentAccount][language]; ok {
-				currentLanguage = language
-
 				languageItems := services.CheckItem(languageStarRepos)
 				nextPage := global.AccountsStarReposNextPage[global.CurrentAccount]
 				RenderList(languageItems, nextPage, len(languageItems))
@@ -240,6 +241,19 @@ ITEM:
 			os.Exit(0)
 		}
 		ui.Render(LanguageListHelp(), l)
+	}
+}
+
+func cancel()  {
+	if strings.HasPrefix(global.PreAction, "RenderLanguagesList") {
+		language := strings.Split(global.PreAction, ":")[1]
+
+		languageStarRepos := global.AccountsLanguageStarRepose[global.CurrentAccount][language]
+		languageItems := services.CheckItem(languageStarRepos)
+		nextPage := global.AccountsStarReposNextPage[global.CurrentAccount]
+		RenderList(languageItems, nextPage, len(languageItems))
+	} else {
+		RenderCurrentList()
 	}
 }
 
@@ -271,7 +285,7 @@ func RenderSearch() {
 		case "<Tab>":
 			ui.Clear()
 			ui.Close()
-			RenderCurrentList()
+			cancel()
 			os.Exit(0)
 		case "<Enter>":
 			ui.Clear()
@@ -358,6 +372,7 @@ func fetchRepos(username string) {
 				} else {
 					global.CurrentAccount = owner
 					global.SelectedRow = 0
+					global.PreAction = ""
 					ReloadRenderList(1)
 				}
 				os.Exit(0)
@@ -437,7 +452,7 @@ func RenderTable(gRepos *global.GRepository, description string) {
 				stat bool
 			)
 			if gRepos.TranslateStat != true {
-				desc, stat = spinner.RunF2[string, bool]("translate doing", func() (string, bool) {
+				desc, stat = spinner.RunF2[string, bool]("translate doing ", func() (string, bool) {
 					result, ok := translate.Translation(description)
 					result = strings.ReplaceAll(strings.ReplaceAll(result, " | ", ""), "|", "")
 					return result, ok
@@ -471,28 +486,12 @@ func RenderTable(gRepos *global.GRepository, description string) {
 
 			RenderTable(gRepos, desc)
 			os.Exit(0)
-		case "d":
-			ui.Clear()
-			ui.Close()
-
-			allStarsRepos := global.AccountsAllStarRepos[global.CurrentAccount]
-			allStarsRepos = lo.FilterMap(allStarsRepos, func(item *global.GRepository, _ int) (*global.GRepository, bool) {
-				if strings.Compare(*item.Repository.FullName, repos.GetFullName()) == 0 {
-					return item, false
-				}
-				return item, true
-			})
-			global.AccountsAllStarRepos[global.CurrentAccount] = allStarsRepos
-
-			items := services.CheckItem(allStarsRepos)
-			RenderList(items, global.AccountsStarReposNextPage[global.CurrentAccount], len(items))
-			os.Exit(0)
 		case "o":
 			_ = open.Run(fmt.Sprintf("https://github.com/%s", repos.GetFullName()))
 		case "r":
 			ui.Clear()
 			ui.Close()
-			RenderCurrentList()
+			cancel()
 			os.Exit(0)
 		}
 		ui.Render(table, TableDesc(description), TableHelp())
@@ -526,7 +525,7 @@ func RenderAccounts() {
 		case "c":
 			ui.Clear()
 			ui.Close()
-			RenderCurrentList()
+			cancel()
 			os.Exit(0)
 		case "j", "<Down>":
 			l.ScrollDown()

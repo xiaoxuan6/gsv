@@ -8,7 +8,7 @@ import (
 
 func ListHelp() *widgets.Paragraph {
 	p := widgets.NewParagraph()
-	p.Text = "Ctrl+c：终止程序、Ctrl+t: 翻译当前页所有数据、Enter：进入详情页、a：显示所有用户、b：置低、c: 返回列表、j：上一条、K：下一条、l: 显示所有语言、o: 打开链接、s：搜索 github 用户、t：置顶"
+	p.Text = "Ctrl+c：终止程序、Ctrl+t: 翻译当前页所有数据、Enter：进入详情页\na：显示所有用户、b：置低、c: 返回列表、j：上一条、K：下一条、l: 显示所有语言、o: 打开链接、s：搜索 github 用户、t：置顶"
 	p.Border = false
 	p.SetRect(0, 5, 160, 1)
 	p.TextStyle.Fg = ui.ColorMagenta
@@ -48,7 +48,7 @@ func FetchReposHelp() *widgets.Paragraph {
 
 func TableHelp() *widgets.Paragraph {
 	p := widgets.NewParagraph()
-	p.Text = "Ctrl+c：终止程序、a：显示所有的用户、d:删除当前数据、o：使用浏览器打开链接、r：github stars 列表、s：重新搜索、t：翻译 desc"
+	p.Text = "Ctrl+c：终止程序、a：显示所有的用户、o：使用浏览器打开链接、r：github stars 列表、s：重新搜索、t：翻译 desc"
 	p.Border = false
 	p.SetRect(0, 30, 140, 15)
 	p.TextStyle.Fg = ui.ColorMagenta
