@@ -13,8 +13,12 @@ func Translation(description string) (string, bool) {
 	if response.Code != 200 {
 		return description, false
 	}
-	end := time.Now().Sub(start).Seconds()
 
+	if len(response.Data) < 1 {
+		return description, false
+	}
+
+	end := time.Now().Sub(start).Seconds()
 	return fmt.Sprintf(
 		"%s {耗时：%s/s}",
 		strings.TrimSpace(response.Data),
