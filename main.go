@@ -13,10 +13,11 @@ func main() {
 
 	app := cli.App{
 		Name:        "gsv",
-		Usage:       "查找并展示 github 用户 stars repos",
-		Description: "查找并展示 github 用户 stars repos",
+		Usage:       "查找或下载 github 用户 stars repos",
+		Description: "查找或下载 github 用户 stars repos",
 		Commands: cli.Commands{
 			commands.AllRepos(),
+			commands.Download(),
 		},
 	}
 

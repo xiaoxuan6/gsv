@@ -20,6 +20,19 @@ func FetchDataWithPage(account string, page int) (items []string, nextPage int) 
 }
 
 func FetchData(account string, page, perPage int) (items []string, nextPage int) {
+	allRepos, nextPage := FetchStarRepos(account, page, perPage)
+	if len(allRepos) > 0 {
+		items = CheckRepos(allRepos)
+	} else {
+		allStarsRepos := make([]*global.GRepository, 0)
+		global.AccountsAllStarRepos[global.CurrentAccount] = allStarsRepos
+	}
+	global.AccountsStarReposNextPage[global.CurrentAccount] = nextPage
+
+	return
+}
+
+func FetchStarRepos(account string, page, perPage int) ([]*github2.Repository, int) {
 	allStarRepos, nextPage := github.AllStarsRepos(account, page, perPage)
 
 	var allRepos []*github2.Repository
@@ -32,15 +45,7 @@ func FetchData(account string, page, perPage int) (items []string, nextPage int)
 		allRepos = append(allRepos, repos)
 	}
 
-	if len(allRepos) > 0 {
-		items = CheckRepos(allRepos)
-	} else {
-		allStarsRepos := make([]*global.GRepository, 0)
-		global.AccountsAllStarRepos[global.CurrentAccount] = allStarsRepos
-	}
-	global.AccountsStarReposNextPage[global.CurrentAccount] = nextPage
-
-	return
+	return allRepos, nextPage
 }
 
 func CheckRepos(repos []*github2.Repository) (items []string) {
