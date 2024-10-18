@@ -28,8 +28,6 @@ func Translation(description string) (string, bool) {
 			data = translate(description)
 		case 1:
 			data = missuoTranslate(description)
-		default:
-			data = description
 		}
 	} else {
 		data = response.Data

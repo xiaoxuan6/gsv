@@ -244,7 +244,7 @@ ITEM:
 	}
 }
 
-func cancel()  {
+func cancel() {
 	if strings.HasPrefix(global.PreAction, "RenderLanguagesList") {
 		language := strings.Split(global.PreAction, ":")[1]
 
@@ -304,7 +304,14 @@ func RenderSearch() {
 			os.Exit(0)
 		default:
 			if e.Type == ui.KeyboardEvent {
-				input += e.ID
+				if strings.Compare(e.ID, "<C-<Backspace>>") == 0 {
+					if inputLen := len(input); inputLen > 0 {
+						input = input[:inputLen-1]
+					}
+				} else {
+					input += e.ID
+				}
+
 				p.Text = input
 				ui.Render(p)
 			}
