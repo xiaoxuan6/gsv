@@ -15,6 +15,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -188,6 +189,12 @@ ITEM:
 	}
 	natsort.Sort(items)
 
+	var row int
+	if len(global.PreAction) > 0 {
+		currentLanguage := strings.Split(global.PreAction, ":")[1]
+		row = slices.Index(items, currentLanguage)
+	}
+
 	if err := ui.Init(); err != nil {
 		log.Fatalf("failed to initialize termui: %v", err)
 	}
@@ -196,6 +203,7 @@ ITEM:
 	l := widgets.NewList()
 	l.Title = "All language list"
 	l.Rows = items
+	l.SelectedRow = row
 	l.SelectedRowStyle = ui.NewStyle(ui.ColorGreen)
 	l.TextStyle = ui.NewStyle(ui.ColorWhite)
 	l.SetRect(0, 5, 30, 20)
