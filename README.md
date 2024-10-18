@@ -5,16 +5,30 @@
 ![demo](./screen.gif)
 
 # 特性
-* 1、支持搜索 github 账号
-* 2、展示 stars 列表
-* 3、支持查看某个库详情（description、stars、forks）
-* 4、支持多个账号切换
-* 5、支持使用浏览器打开指定库
+* 支持搜索 github 账号
+* 展示 stars 列表
+* 支持查看某个库详情（description、stars、forks）
+* 支持多个账号切换
+* 支持使用浏览器打开指定库
 
 # Install
 
 ```shell
 go install github.com/xiaoxuan6/gsv@latest
+```
+
+# Shell
+
+## install
+
+```shell
+bash <(curl -sSL https://github-mirror.us.kg/https:/github.com/xiaoxuan6/gsv/blob/main/gsv.sh) install
+```
+
+## remove
+
+```shell
+bash <(curl -sSL https://github-mirror.us.kg/https:/github.com/xiaoxuan6/gsv/blob/main/gsv.sh) remove
 ```
 
 # Releaser

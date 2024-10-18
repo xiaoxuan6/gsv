@@ -3,4 +3,5 @@
 dist/
 gsv
 gsv.*
+!gsv.sh
 star_repos.xlsx
