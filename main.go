@@ -16,7 +16,7 @@ func main() {
 		Usage:       "查找或下载 github 用户 stars repos",
 		Description: "查找或下载 github 用户 stars repos",
 		Commands: cli.Commands{
-			commands.AllRepos(),
+			commands.Search(),
 			commands.Download(),
 		},
 	}

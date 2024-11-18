@@ -9,12 +9,12 @@ import (
 	"time"
 )
 
-func AllRepos() *cli.Command {
+func Search() *cli.Command {
 	return &cli.Command{
-		Name:        "all-repos",
+		Name:        "search",
 		Usage:       "查找指定用户所有的 star repos",
 		Description: "查找指定用户所有的 star repos（默认 100 条）",
-		Aliases:     []string{"all"},
+		Aliases:     []string{"s"},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:     "account",
