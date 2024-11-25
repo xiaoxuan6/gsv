@@ -18,7 +18,7 @@ require (
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 	github.com/stretchr/testify v1.9.0
 	github.com/urfave/cli/v2 v2.27.4
-	github.com/xiaoxuan6/deeplx v0.1.3
+	github.com/xiaoxuan6/deeplx v0.1.4
 	github.com/xuri/excelize/v2 v2.8.1
 	mvdan.cc/xurls/v2 v2.5.0
 )
