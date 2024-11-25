@@ -6,6 +6,7 @@ import (
 	"github.com/xiaoxuan6/gsv/pkg/github"
 	"github.com/xiaoxuan6/gsv/pkg/global"
 	"github.com/xiaoxuan6/gsv/pkg/translate"
+	"slices"
 	"strings"
 	"sync"
 )
@@ -55,6 +56,11 @@ func CheckRepos(repos []*github2.Repository) (items []string) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
+
+			if slices.Contains(History, val.GetFullName()) {
+				fmt.Println(fmt.Sprintf("repo %s exists", val.GetFullName()))
+				return
+			}
 
 			desc, descT, stat := checkItem(val)
 			newRepository := &global.GRepository{

@@ -34,8 +34,19 @@ func Search() *cli.Command {
 				Value:   100,
 				Usage:   "每页查询的个数",
 			},
+			&cli.BoolFlag{
+				Name:    "filter",
+				Aliases: []string{"f"},
+				Value:   false,
+				Usage:   "是否过滤掉 github.com/xiaoxuan6/go-package-example 中已存在的库",
+			},
 		},
 		Action: func(c *cli.Context) error {
+			global.FilterAction = c.Bool("filter")
+			if global.FilterAction {
+				go services.FetchHistory()
+			}
+
 			s := spinner.New(spinner.CharSets[30], 100*time.Millisecond)
 			s.Prefix = "fetching github stars repos data "
 			s.FinalMSG = "done"

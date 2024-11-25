@@ -14,6 +14,7 @@ var (
 	SelectedRow    int
 	CurrentAccount string
 	PreAction      string
+	FilterAction   bool
 
 	AccountsAllStarRepos = make(map[string][]*GRepository, 0)
 

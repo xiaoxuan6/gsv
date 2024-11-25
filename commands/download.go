@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
 	github2 "github.com/google/go-github/v64/github"
@@ -11,13 +10,9 @@ import (
 	"github.com/xiaoxuan6/gsv/pkg/translate"
 	"github.com/xiaoxuan6/gsv/services"
 	"github.com/xuri/excelize/v2"
-	"io"
-	"mvdan.cc/xurls/v2"
-	"net/http"
 	"slices"
 	"strings"
 	"sync"
-	"time"
 )
 
 func Download() *cli.Command {
@@ -62,15 +57,13 @@ func Download() *cli.Command {
 				}(username)
 			}
 
-			wg.Add(1)
-			go func(filter bool) {
-				defer wg.Done()
-				if filter == false {
-					return
-				}
-
-				fetchHistory()
-			}(context.Bool("filter"))
+			if context.Bool("filter") {
+				wg.Add(1)
+				go func() {
+					defer wg.Done()
+					services.FetchHistory()
+				}()
+			}
 
 			go func() {
 				wg.Wait()
@@ -146,7 +139,7 @@ func translateDescription(wg *sync.WaitGroup, username string, starRepos []*gith
 	gStarRepos := make([]*global.GRepository, 0)
 	for _, repos := range starRepos {
 		repos := repos
-		if slices.Contains(history, repos.GetFullName()) {
+		if slices.Contains(services.History, repos.GetFullName()) {
 			fmt.Println(fmt.Sprintf("repo %s exists", repos.GetFullName()))
 			continue
 		} else {
@@ -209,52 +202,4 @@ func saveFile() {
 
 	_ = f.DeleteSheet("Sheet1")
 	_ = f.SaveAs("star_repos.xlsx")
-}
-
-var history = make([]string, 100)
-
-func fetchHistory() {
-	urls := []string{
-		"https://github-mirror.us.kg/https:/github.com/xiaoxuan6/go-package-example/blob/main/README_PHP.md",
-		"https://github-mirror.us.kg/https:/github.com/xiaoxuan6/go-package-example/blob/main/README_OTHER.md",
-		"https://github-mirror.us.kg/https:/github.com/xiaoxuan6/go-package-example/blob/main/README.md",
-	}
-
-	var (
-		wg     sync.WaitGroup
-		client = http.Client{
-			Timeout: 3 * time.Second,
-		}
-	)
-
-	for _, url := range urls {
-		wg.Add(1)
-
-		url := url
-		go func() {
-			defer wg.Done()
-			response, err := client.Get(url)
-			if err != nil {
-				return
-			}
-
-			defer response.Body.Close()
-			f := bufio.NewReader(response.Body)
-			for {
-				line, _, err := f.ReadLine()
-				if err == io.EOF {
-					break
-				}
-
-				x := xurls.Relaxed()
-				domain := x.FindString(string(line))
-				domain = strings.ReplaceAll(domain, "github.com/", "")
-				if len(domain) > 1 {
-					history = append(history, domain)
-				}
-			}
-		}()
-	}
-
-	wg.Wait()
 }
