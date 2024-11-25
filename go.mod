@@ -6,7 +6,7 @@ toolchain go1.23.3
 
 require (
 	facette.io/natsort v0.0.0-20181210072756-2cd4dd1e2dcb
-	github.com/OwO-Network/gdeeplx v0.0.1
+	github.com/abadojack/whatlanggo v1.0.1
 	github.com/atotto/clipboard v0.1.4
 	github.com/briandowns/spinner v1.23.1
 	github.com/gizak/termui/v3 v3.1.0
@@ -18,14 +18,13 @@ require (
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 	github.com/stretchr/testify v1.9.0
 	github.com/urfave/cli/v2 v2.27.4
-	github.com/xiaoxuan6/deeplx v0.1.4
+	github.com/xiaoxuan6/deeplx v0.2.0
 	github.com/xuri/excelize/v2 v2.8.1
 	mvdan.cc/xurls/v2 v2.5.0
 )
 
 require (
 	github.com/OwO-Network/DeepLX v0.9.8 // indirect
-	github.com/abadojack/whatlanggo v1.0.1 // indirect
 	github.com/andybalholm/brotli v1.1.1 // indirect
 	github.com/avast/retry-go v2.7.0+incompatible // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect

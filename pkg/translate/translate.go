@@ -2,20 +2,28 @@ package translate
 
 import (
 	"fmt"
-	"github.com/OwO-Network/gdeeplx"
+	"github.com/abadojack/whatlanggo"
 	"github.com/xiaoxuan6/deeplx"
 	"strings"
 	"time"
 )
 
 func Translation(description string) (string, bool) {
+	if len(description) < 1 {
+		return "", false
+	}
+
+	lang := whatlanggo.DetectLang(description)
+	sourceLang := strings.ToUpper(lang.Iso6391())
+	if strings.Compare(sourceLang, "zh") == 0 {
+		return description, true
+	}
+
 	start := time.Now()
-	response := deeplx.Translate(description, "en", "zh")
+	response := deeplx.Translate(description, sourceLang, "zh")
 
 	var data string
-	if response.Code != 200 {
-		data = translate(description)
-	} else {
+	if response.Code == 200 {
 		data = response.Data
 	}
 
@@ -29,13 +37,4 @@ func Translation(description string) (string, bool) {
 		strings.TrimSpace(data),
 		fmt.Sprintf("%.2f", end),
 	), true
-}
-
-func translate(description string) string {
-	result, err := gdeeplx.Translate(description, "EN", "ZH", 0)
-	if err != nil {
-		return description
-	}
-
-	return result.(map[string]interface{})["data"].(string)
 }
