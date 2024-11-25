@@ -3,6 +3,7 @@ package tui
 import (
 	"facette.io/natsort"
 	"fmt"
+	"github.com/atotto/clipboard"
 	ui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
 	"github.com/samber/lo"
@@ -310,6 +311,10 @@ func RenderSearch() {
 			ui.Close()
 			RenderSearch()
 			os.Exit(0)
+		case "<C-v>":
+			txt, _ := clipboard.ReadAll()
+			p.Text = txt
+			ui.Render(p)
 		default:
 			if e.Type == ui.KeyboardEvent {
 				if strings.Compare(e.ID, "<C-<Backspace>>") == 0 {

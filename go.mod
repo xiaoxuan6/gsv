@@ -7,6 +7,7 @@ toolchain go1.23.3
 require (
 	facette.io/natsort v0.0.0-20181210072756-2cd4dd1e2dcb
 	github.com/OwO-Network/gdeeplx v0.0.1
+	github.com/atotto/clipboard v0.1.4
 	github.com/briandowns/spinner v1.23.1
 	github.com/gizak/termui/v3 v3.1.0
 	github.com/gofri/go-github-ratelimit v1.1.0
