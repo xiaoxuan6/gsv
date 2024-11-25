@@ -25,6 +25,11 @@ func Translation(description string) (string, bool) {
 	var data string
 	if response.Code == 200 {
 		data = response.Data
+	} else {
+		response = deeplx.TranslateWithProxyUrl(description, sourceLang, "zh", true)
+		if response.Code == 200 {
+			data = response.Data
+		}
 	}
 
 	if len(data) < 1 {
